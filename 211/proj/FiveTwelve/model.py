@@ -1,10 +1,10 @@
 """
-The game state and logic (model component) of 512, 
-a game based on 2048 with a few changes. 
+The game state and logic (model component) of 512,
+a game based on 2048 with a few changes.
 This is the 'model' part of the model-view-controller
 construction plan.  It must NOT depend on any
-particular view component, but it produces event 
-notifications to trigger view updates. 
+particular view component, but it produces event
+notifications to trigger view updates.
 """
 
 from game_element import GameElement, GameEvent, EventKind
@@ -22,7 +22,16 @@ class Vec():
     it represents distance from another position.
     Thus we can add two Vecs to get a Vec.
     """
-    #Fixme:  We need a constructor, and __add__ method, and __eq__.
+    #Fixed:  We need a constructor, and __add__ method, and __eq__.
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+    def __add__(self, __value: 'Vec') -> 'Vec':
+        return Vec(self.x + __value.x, self.y + __value.y)
+
+    def __eq__(self, __value: 'Vec') -> bool:
+        return (self.x == __value.x and self.y == __value.y)
 
 
 class Tile(GameElement):
@@ -40,17 +49,26 @@ class Board(GameElement):
 
     def __init__(self):
         super().__init__()
-        self.tiles = [ None ]  # FIXME: a grid holds a matrix of tiles
+        self.tiles = [[0, 0, 0],
+                      [0, 0, 0],
+                      [0, 0, 0]]  # FIXed: a grid holds a matrix of tiles
 
     def has_empty(self) -> bool:
         """Is there at least one grid element without a tile?"""
+        for row in self.tiles:
+            for tile in row:
+                if not tile:
+                    return True
+
         return False
-        # FIXME: Should return True if there is some element with value None
+        # FIXed: Should return True if there is some element with value None
 
     def place_tile(self):
         """Place a tile on a randomly chosen empty square."""
-        return
-        #FIXME
+        x = random.randint(0, 2)
+        y = random.randint(0, 2)
+        self.tiles[y][x] = Tile()
+        #FIXed
 
     def score(self) -> int:
         """Calculate a score from the board.
@@ -60,5 +78,3 @@ class Board(GameElement):
         """
         return 0
         #FIXME
-
-
