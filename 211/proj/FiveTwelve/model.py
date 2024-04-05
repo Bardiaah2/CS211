@@ -37,8 +37,11 @@ class Vec():
 class Tile(GameElement):
     """A slidy numbered thing."""
 
-    def __init__(self):
+    def __init__(self, pos: Vec, value: int = 2):
         super().__init__()
+        self.row = pos.y
+        self.col = pos.x
+        self.value = value
 
 
 class Board(GameElement):
@@ -47,11 +50,22 @@ class Board(GameElement):
     can be displayed graphically.
     """
 
-    def __init__(self):
+    def __init__(self, rows=4, cols=4):
         super().__init__()
-        self.tiles = [[0, 0, 0],
-                      [0, 0, 0],
-                      [0, 0, 0]]  # FIXed: a grid holds a matrix of tiles
+        self.rows = rows
+        self.cols = cols
+        self.tiles = [ ]
+        for row in range(rows):
+            row_tiles = [ ]
+            for col in range(cols):
+                row_tiles.append(None)
+            self.tiles.append(row_tiles) # FIXed: a grid holds a matrix of tiles
+
+    def __getitem__(self, pos: Vec) -> Tile:
+        return self.tiles[pos.x][pos.y]
+
+    def __setitem__(self, pos: Vec, tile: Tile):
+        self.tiles[pos.x][pos.y] = tile
 
     def has_empty(self) -> bool:
         """Is there at least one grid element without a tile?"""
@@ -63,11 +77,25 @@ class Board(GameElement):
         return False
         # FIXed: Should return True if there is some element with value None
 
-    def place_tile(self):
+    def _empty_positions(self) -> List[Vec]:
+        empty = []
+        for row in range(len(self.tiles)):
+                for col in range(3):
+
+                    if not self.tiles[row][col]:
+                        empty.append(Vec(col, row))
+        return empty
+
+    def place_tile(self, value: None | int = None):
         """Place a tile on a randomly chosen empty square."""
-        x = random.randint(0, 2)
-        y = random.randint(0, 2)
-        self.tiles[y][x] = Tile()
+        empty = self._empty_positions()
+        assert len(empty) > 0
+        pos = random.choice(empty)
+        if not value:
+            if random.random() < 0.1:
+                self[pos] = Tile(pos, 4)
+                return
+        self[pos] = Tile(pos)
         #FIXed
 
     def score(self) -> int:

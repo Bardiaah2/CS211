@@ -36,7 +36,7 @@ frustrating to pretend I had seen the optimization earlier.
 
 A skeleton is of model.py is provided for you.  This skeleton
 is a set of "stubs" for the things needed by the game
-manager and view. 
+manager and view.
 
 ### Model-View-Controller
 
@@ -49,18 +49,18 @@ Python.  If we wanted nicer graphics, we could use the
 PyQt graphics package.  The code for FiveTwelve is
 organized in a way that would allow us to replace the
 'view' (graphics interaction) component without changing the 'model'
-(game logic) component at all.  
+(game logic) component at all.
 
 In Winter 2024 I added a
 very basic textual interface as an alternative 'view' component.
-If you change these lines in `game_manager.py` 
+If you change these lines in `game_manager.py`
 
 ```python
 import tk_view as view
 # import text_view as view
 ```
 
-to 
+to
 
 ```python
 # import tk_view as view
@@ -68,7 +68,7 @@ import text_view as view
 ```
 the application will use a textual interface on the console rather
 than the graphical interface.  The logic of the application in `model.py`
-does not require any change at all. 
+does not require any change at all.
 
 How do we do this?  We use a pattern called Model-View-Controller,
 in which "listeners" can be dynamically attached to the "model".
@@ -134,12 +134,14 @@ cut at the constructor (the ```__init__``` method) is
 ```python
     def __init__(self):
         super().__init__()
-        self.tiles = [ [ ] ]  # FIXME: a grid holds a matrix of tiles
+        self.tiles = [ [ None, None, None ],
+                       [ None, None, None ],
+                       [ None, None, None ] ]  # FIXed: a grid holds a matrix of tiles
 ```
 
 You may notice that VS Code and PyCharm use
 a special color for the FIXME comment.  TODO comments
-are also highlighted.  
+are also highlighted.
 
 We need a few more pieces to get started.  The game manager
 needs a way to determine whether there is at least one
@@ -154,13 +156,25 @@ are code we will need to complete soon.
 ```python
     def has_empty(self) -> bool:
         """Is there at least one grid element without a tile?"""
+        for row in self.tiles:
+            for tile in row:
+                if not tile:
+                    return True
+
         return False
-        # FIXME: Should return True if there is some element with value None
+        # FIXed: Should return True if there is some element with value None
 
     def place_tile(self):
         """Place a tile on a randomly chosen empty square."""
-        return
-        #FIXME
+        empty = self._empty_positions()
+        assert len(empty) > 0
+        pos = random.choice(empty)
+        if not value:
+            if random.random() < 0.1:
+                self[pos] = Tile(pos, 4)
+                return
+        self[pos] = Tile(pos)
+        #FIXed
 
     def score(self) -> int:
         """Calculate a score from the board.
@@ -205,16 +219,16 @@ $ python3 game_manager.py
   "Stupidest game")
 
 If we change the `game_manager` component to use the
-textual view, like this: 
+textual view, like this:
 
 ```python
 # import tk_view as view
 import text_view as view
 ```
-the result is similar but less colorful: 
+the result is similar but less colorful:
 
 ```shell
-$ python3 game_manager.py 
+$ python3 game_manager.py
 Game over
 ```
 
@@ -426,7 +440,7 @@ we got it right.
 
 We'll add a couple of simple test cases to make sure the loops in the constructor
 are working as intended.  First we should add
-`from model import Board` near the beginning, then 
+`from model import Board` near the beginning, then
 
 ```python
 class TestBoardConstructor(unittest.TestCase):
@@ -860,7 +874,7 @@ class TestScaffolding(unittest.TestCase):
 One more check is useful:  Since we are using the invalid tile value 0
 to represent a cell that actually contains a `None` value, we want
 it is easy to slip up and create a `Tile` object with the
-invalid value.  (Guess how I know.)  Let's add a test case to guard against that. 
+invalid value.  (Guess how I know.)  Let's add a test case to guard against that.
 
 ```python
     def test_no_bogus_tiles(self):
@@ -1280,7 +1294,7 @@ img/slide-first-first.png "Sliding right starting with leftmost tile")
 This is not correct!  The correct result requires moving the last item
 in the row first, like this:
 
-![Starting again with [2 2 2 _], we get [2 2 _2], 
+![Starting again with [2 2 2 _], we get [2 2 _2],
 then [2 _ _ 4], then [_ _ 2 4]](
 img/slide-last-first.png "Sliding right starting with rightmost tile"
 )

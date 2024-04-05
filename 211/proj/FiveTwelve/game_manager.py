@@ -20,10 +20,10 @@ def main():
     # Handle control component responsibility here
     user_commands = view.Command(game_view)
 
-    # FIXME: We will change this to 
+    # FIXME: We will change this to
     #  grid.place_tile(value=2) after
     #  creating the keyword argument in model.py
-    grid.place_tile()
+    grid.place_tile(value=2)
 
     # Game continues until there is no empty
     # space for a tile
@@ -43,7 +43,7 @@ def main():
             game_view.close()  # OK if it's already closed
             print(f"Your score: {grid.score()}")
             sys.exit(0)
-        else: 
+        else:
             assert cmd == commands.UNMAPPED
 
     game_view.lose(grid.score())
