@@ -4,8 +4,8 @@ model and view and implements controller
 functionality by interpreting keyboard input
 """
 import model
-import tk_view as view
-# import text_view as view
+# import tk_view as view
+import text_view as view
 import commands
 import sys
 
@@ -20,7 +20,7 @@ def main():
     # Handle control component responsibility here
     user_commands = view.Command(game_view)
 
-    # FIXME: We will change this to
+    # FIXed: We will change this to
     #  grid.place_tile(value=2) after
     #  creating the keyword argument in model.py
     grid.place_tile(value=2)

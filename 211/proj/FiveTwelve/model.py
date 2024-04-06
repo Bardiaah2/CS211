@@ -43,6 +43,23 @@ class Tile(GameElement):
         self.col = pos.x
         self.value = value
 
+    def __eq__(self, __value: 'Tile') -> bool:
+        if not isinstance(__value, Tile):
+            return False
+        return self.value == __value.value
+    
+    def move_to(self, new_pos: Vec):
+        self.row = new_pos.x
+        self.col = new_pos.y
+        self.notify_all(GameEvent(EventKind.tile_updated, self))
+
+    def merge(self, other: "Tile"):
+        # This tile incorporates the value of the other tile
+        self.value = self.value + other.value
+        self.notify_all(GameEvent(EventKind.tile_updated, self))
+        # The other tile has been absorbed.  Resistance was futile.
+        other.notify_all(GameEvent(EventKind.tile_removed, other))
+
 
 class Board(GameElement):
     """The game grid.  Inherits 'add_listener' and 'notify_all'
@@ -100,12 +117,28 @@ class Board(GameElement):
 
     def score(self) -> int:
         """Calculate a score from the board.
-        (Differs from classic 1024, which calculates score
+        Differs from classic 1024, which calculates score
         based on sequence of moves rather than state of
         board.
         """
-        return 0
-        #FIXME
+        tiles_val = [sum(i) for i in self.to_list()]
+        return sum(tiles_val)
+        #FIXed
+
+    def to_list(self) -> List[List[int]]:
+        """Test scaffolding: represent each Tile by its
+        integer value and empty positions as 0
+        """
+        result = [ ]
+        for row in self.tiles:
+            row_values = []
+            for col in row:
+                if col is None:
+                    row_values.append(0)
+                else:
+                    row_values.append(col.value)
+            result.append(row_values)
+        return result
 
     def from_list(self, values: List[List[int]]) -> 'Board':
         result = Board(len(values), len(values[0]))
@@ -117,5 +150,53 @@ class Board(GameElement):
         return result
     
     def in_bounds(self, pos: Vec) -> bool:
-        return (self.rows >= pos.x and self.y >= pos.y)
+        return (self.rows >= pos.x and self.cols >= pos.y)
+    
+    def slide(self, pos: Vec,  dir: Vec):
+        """Slide tile at row,col (if any)
+        in direction (dx,dy) until it bumps into
+        another tile or the edge of the board.
+        """
+        if self[pos] is None:
+            return
+        while True:
+            new_pos = pos + dir
+            if not self.in_bounds(new_pos):
+                break
+            if self[new_pos] is None:
+                self._move_tile(pos, new_pos)
+            elif self[pos] == self[new_pos]:
+                self[pos].merge(self[new_pos])
+                self._move_tile(pos, new_pos)
+                break  # Stop moving when we merge with another tile
+            else:
+                # Stuck against another tile
+                break
+            pos = new_pos
 
+    def _move_tile(self, old_pos: Vec, new_pos: Vec):
+        if not self[old_pos]:
+            return
+        self[old_pos].move_to(new_pos)
+
+    def left(self):
+        for row in range(0, len(self.tiles)):
+            for col in range(0, len(self.tiles[0])):
+                self.slide(Vec(row, col), Vec(0, -1))
+    
+    def right(self):
+        for row in range(0, len(self.tiles)):
+            for col in range(0, len(self.tiles[0]), -1):
+                self.slide(Vec(row, col), Vec(0, 1))
+    
+    def down(self):
+        for row in range(0, len(self.tiles), -1):
+            for col in range(0, len(self.tiles[0])):
+                self.slide(Vec(row, col), Vec(1, 0))
+    
+    def up(self):
+        for row in range(0, len(self.tiles)):
+            for col in range(0, len(self.tiles[0])):
+                self.slide(Vec(row, col), Vec(-1, 0))
+    
+    

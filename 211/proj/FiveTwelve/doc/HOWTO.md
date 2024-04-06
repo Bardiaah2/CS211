@@ -182,8 +182,9 @@ are code we will need to complete soon.
         based on sequence of moves rather than state of
         board.
         """
-        return 0
-        #FIXME
+        tiles_val = self.to_list()
+        return sum(tiles_val)
+        #FIXed
 ```
 
 ### The Tile Class
