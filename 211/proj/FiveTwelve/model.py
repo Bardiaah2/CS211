@@ -65,7 +65,7 @@ class Board(GameElement):
         return self.tiles[pos.x][pos.y]
 
     def __setitem__(self, pos: Vec, tile: Tile):
-        self.tiles[pos.x][pos.y] = tile
+        self.tiles[pos.y][pos.x] = tile
 
     def has_empty(self) -> bool:
         """Is there at least one grid element without a tile?"""
@@ -80,7 +80,7 @@ class Board(GameElement):
     def _empty_positions(self) -> List[Vec]:
         empty = []
         for row in range(len(self.tiles)):
-                for col in range(3):
+                for col in range(self.cols):
 
                     if not self.tiles[row][col]:
                         empty.append(Vec(col, row))
@@ -106,3 +106,16 @@ class Board(GameElement):
         """
         return 0
         #FIXME
+
+    def from_list(self, values: List[List[int]]) -> 'Board':
+        result = Board(len(values), len(values[0]))
+        for row in range(result.rows):
+            for col in range(result.cols):
+                if not values[row][col]:
+                    result[Vec(row, col)] = Tile(values[row][col])
+        
+        return result
+    
+    def in_bounds(self, pos: Vec) -> bool:
+        return (self.rows >= pos.x and self.y >= pos.y)
+

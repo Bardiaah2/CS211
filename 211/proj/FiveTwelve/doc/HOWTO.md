@@ -681,7 +681,7 @@ by with just one version and use a keyword argument to optionally fix the value:
         row, col = choice.x, choice.y
         if value is None:
             # 0.1 probability of 4
-            if random.random() > 0.1:
+            if random.random() < 0.1:
                 value = 4
             else:
                 value = 2
