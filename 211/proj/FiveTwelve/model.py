@@ -39,8 +39,8 @@ class Tile(GameElement):
 
     def __init__(self, pos: Vec, value: int = 2):
         super().__init__()
-        self.row = pos.y
-        self.col = pos.x
+        self.row = pos.x
+        self.col = pos.y
         self.value = value
 
     def __eq__(self, __value: 'Tile') -> bool:
@@ -79,10 +79,13 @@ class Board(GameElement):
             self.tiles.append(row_tiles) # FIXed: a grid holds a matrix of tiles
 
     def __getitem__(self, pos: Vec) -> Tile:
-        return self.tiles[pos.x][pos.y]
+        if self.in_bounds(pos):
+            return self.tiles[pos.x][pos.y]
+        else:
+            return None
 
     def __setitem__(self, pos: Vec, tile: Tile):
-        self.tiles[pos.y][pos.x] = tile
+        self.tiles[pos.x][pos.y] = tile
 
     def has_empty(self) -> bool:
         """Is there at least one grid element without a tile?"""
@@ -100,7 +103,7 @@ class Board(GameElement):
                 for col in range(self.cols):
 
                     if not self.tiles[row][col]:
-                        empty.append(Vec(col, row))
+                        empty.append(Vec(row, col))
         return empty
 
     def place_tile(self, value: None | int = None):
@@ -110,9 +113,13 @@ class Board(GameElement):
         pos = random.choice(empty)
         if not value:
             if random.random() < 0.1:
-                self[pos] = Tile(pos, 4)
+                new_tile = Tile(pos, 4)
+                self[pos] = new_tile
+                self.notify_all(GameEvent(EventKind.tile_created, new_tile))
                 return
-        self[pos] = Tile(pos)
+        new_tile = Tile(pos)
+        self[pos] = new_tile
+        self.notify_all(GameEvent(EventKind.tile_created, new_tile))
         #FIXed
 
     def score(self) -> int:
@@ -150,7 +157,7 @@ class Board(GameElement):
         return result
     
     def in_bounds(self, pos: Vec) -> bool:
-        return (self.rows >= pos.x and self.cols >= pos.y)
+        return (self.rows > pos.x >= 0 and self.cols > pos.y >= 0)
     
     def slide(self, pos: Vec,  dir: Vec):
         """Slide tile at row,col (if any)
@@ -175,28 +182,30 @@ class Board(GameElement):
             pos = new_pos
 
     def _move_tile(self, old_pos: Vec, new_pos: Vec):
-        if not self[old_pos]:
+        if self[old_pos] is None:
             return
         self[old_pos].move_to(new_pos)
+        self[new_pos] = self[old_pos]
+        self[old_pos] = None
 
     def left(self):
-        for row in range(0, len(self.tiles)):
-            for col in range(0, len(self.tiles[0])):
+        for row in range(0, self.rows):
+            for col in range(0, self.cols):
                 self.slide(Vec(row, col), Vec(0, -1))
     
     def right(self):
-        for row in range(0, len(self.tiles)):
-            for col in range(0, len(self.tiles[0]), -1):
+        for row in range(0, self.rows):
+            for col in range(self.cols - 1, -1, -1):
                 self.slide(Vec(row, col), Vec(0, 1))
     
     def down(self):
-        for row in range(0, len(self.tiles), -1):
-            for col in range(0, len(self.tiles[0])):
+        for row in range(self.rows - 1, -1, -1):
+            for col in range(0, self.cols):
                 self.slide(Vec(row, col), Vec(1, 0))
     
     def up(self):
-        for row in range(0, len(self.tiles)):
-            for col in range(0, len(self.tiles[0])):
+        for row in range(0, self.rows):
+            for col in range(0, self.cols):
                 self.slide(Vec(row, col), Vec(-1, 0))
     
     
