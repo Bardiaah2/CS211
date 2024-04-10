@@ -147,14 +147,15 @@ class Board(GameElement):
             result.append(row_values)
         return result
 
-    def from_list(self, values: List[List[int]]) -> 'Board':
-        result = Board(len(values), len(values[0]))
-        for row in range(result.rows):
-            for col in range(result.cols):
-                if not values[row][col]:
-                    result[Vec(row, col)] = Tile(values[row][col])
+    def from_list(self, values: List[List[int]]):
+        self.__init__(len(values), len(values[0]))
+        for row in range(self.rows):
+            for col in range(self.cols):
+                if values[row][col]:
+                    self[Vec(row, col)] = Tile(Vec(row, col), values[row][col])
+
+        return self
         
-        return result
     
     def in_bounds(self, pos: Vec) -> bool:
         return (self.rows > pos.x >= 0 and self.cols > pos.y >= 0)

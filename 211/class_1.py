@@ -63,8 +63,9 @@ def max_run(l: list) -> int:
                 j += 1
             else:
                 curr_max = max(curr_max, j-i)
-                i = j + 1
-                j += 2
+                i = j
+                j += 1
+        curr_max = curr_max = max(curr_max, j-i)
     
     return curr_max
 
@@ -89,5 +90,6 @@ if __name__ == '__main__':
     print(dedup([1]))
 
     print('max_run:')
-    print(max_run([1, 1, 2, 2, 3, 4, 4, 4, 2, 4, 4])) # 3
+    print(max_run([1, 1, 3, 3, 3, 5])) # 3
+    print(max_run([3, 4, 5, 5, 5])) # 3
     print(max_run([])) # 0
