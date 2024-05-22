@@ -26,9 +26,9 @@ class ALU(object):
     # inputs and output to the selected circuitry for each operation.
     ALU_OPS = {
         OpCode.ADD: lambda x, y: x + y,
-        OpCode.SUB: lambda x, y: 0, # implement these opcodes
-        OpCode.MUL: lambda x, y: 0,
-        OpCode.DIV: lambda x, y: 0,
+        OpCode.SUB: lambda x, y: x - y, # implement these opcodes
+        OpCode.MUL: lambda x, y: x * y,
+        OpCode.DIV: lambda x, y: x // y,
         # For memory access operations load, store, the ALU
         # performs the address calculation
         OpCode.LOAD: lambda x, y: x + y,
@@ -38,7 +38,16 @@ class ALU(object):
     }
 
     def exec(self, op: OpCode, in1: int, in2: int) -> Tuple[int, CondFlag]:
-        pass # You must implement this method
+        try:
+            output = op(in1, in2)
+            if output == 0:
+                return (output, CondFlag.Z)
+            elif output > 0:
+                return (output, CondFlag.P)
+            else:
+                return (output, CondFlag.M)
+        except:
+            return (0, CondFlag.V)
 
 class CPUStep(MVCEvent):
     """CPU is beginning step with PC at a given address"""
