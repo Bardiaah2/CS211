@@ -87,17 +87,28 @@ class Instruction(object):
                      reg_src2: int,
                      offset: int):
         """Assemble an instruction from its fields. """
-        self.op = op
-        self.cond = cond
-        self.reg_target = reg_target
-        self.reg_src1 = reg_src1
-        self.reg_src2 = reg_src2
-        self.offset = offset
+        self.op = op  # 26-30
+        self.cond = cond  # 22-25
+        self.reg_target = reg_target  # 18-21
+        self.reg_src1 = reg_src1  # 14-17
+        self.reg_src2 = reg_src2  # 10-13
+        self.offset = offset  # 0-9
         return
 
     def encode(self) -> int:
         """Encode instruction as 32-bit integer"""
-        pass # you must implement this method
+        # you must implement this method
+        result = 0
+        if self.offset < 0:
+            result += 2 ** 32 + 2 ** 10 + self.offset - 1
+        else:
+            result += self.offset
+        result += self.reg_src2 << 10
+        result += self.reg_src1 << 14
+        result += self.reg_target << 18
+        result += self.cond << 22
+        result += self.op << 26
+
 
     def __str__(self):
         """String representation looks something like assembly code"""
@@ -114,4 +125,6 @@ class Instruction(object):
 #
 def decode(word: int) -> Instruction:
         """Decode a memory word (32 bit int) into a new Instruction"""
-        pass # you must implement this function
+        # you must implement this function
+        return Instruction(OpCode(op_field.extract(word)), CondFlag(cond_field.extract(word)), reg_target_field.extract(word),
+                           reg_src1_field.extract(word), reg_src2_field.extract(word), -2**10 + offset_field.extract(word) if reserved.extract(word) else offset_field.extract(word))
