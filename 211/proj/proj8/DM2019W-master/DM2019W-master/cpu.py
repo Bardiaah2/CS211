@@ -39,7 +39,7 @@ class ALU(object):
 
     def exec(self, op: OpCode, in1: int, in2: int) -> Tuple[int, CondFlag]:
         try:
-            output = op(in1, in2)
+            output = ALU.ALU_OPS[op](in1, in2)
             if output == 0:
                 return (output, CondFlag.Z)
             elif output > 0:
@@ -84,6 +84,8 @@ class CPU(MVCListenable):
         """One fetch/decode/execute step"""
         # fetch - you must implement this part
         # Produce variables instr_addr and instr_word
+        instr_addr = self.pc.get()
+        instr_word = self.memory.get(instr_addr)
         #
         # decode
         instr = decode(instr_word)

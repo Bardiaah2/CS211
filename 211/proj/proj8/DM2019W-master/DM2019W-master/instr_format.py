@@ -99,16 +99,15 @@ class Instruction(object):
         """Encode instruction as 32-bit integer"""
         # you must implement this method
         result = 0
-        if self.offset < 0:
-            result += 2 ** 32 + 2 ** 10 + self.offset - 1
-        else:
-            result += self.offset
-        result += self.reg_src2 << 10
-        result += self.reg_src1 << 14
-        result += self.reg_target << 18
-        result += self.cond << 22
-        result += self.op << 26
-
+        result = reserved.insert(1 if self.offset < 0 else 0, result)
+        result = op_field.insert(self.op.value, result)
+        result = cond_field.insert(self.cond.value, result)
+        result = reg_target_field.insert(self.reg_target, result)
+        result = reg_src2_field.insert(self.reg_src2, result)
+        result = reg_src1_field.insert(self.reg_src1, result)
+        result = offset_field.insert(self.offset, result)
+        return result
+        
 
     def __str__(self):
         """String representation looks something like assembly code"""
@@ -127,4 +126,4 @@ def decode(word: int) -> Instruction:
         """Decode a memory word (32 bit int) into a new Instruction"""
         # you must implement this function
         return Instruction(OpCode(op_field.extract(word)), CondFlag(cond_field.extract(word)), reg_target_field.extract(word),
-                           reg_src1_field.extract(word), reg_src2_field.extract(word), -2**10 + offset_field.extract(word) if reserved.extract(word) else offset_field.extract(word))
+                           reg_src1_field.extract(word), reg_src2_field.extract(word), offset_field.extract_signed(word))
