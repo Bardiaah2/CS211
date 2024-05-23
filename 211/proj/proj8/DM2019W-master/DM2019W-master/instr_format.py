@@ -4,13 +4,13 @@ from bitfield import BitField
 from enum import Enum, Flag
 
 # The field bit positions
-reserved = BitField(31,31)
-op_field = BitField(26, 30)
-cond_field = BitField(22, 25)
-reg_target_field = BitField(18, 21)
-reg_src1_field = BitField(14, 17)
-reg_src2_field = BitField(10, 13)
-offset_field = BitField(0, 9)
+reserved = BitField(31,31)  # negative or nah
+op_field = BitField(26, 30)  # operation code
+cond_field = BitField(22, 25)  # conditional
+reg_target_field = BitField(18, 21)  # program counter
+reg_src1_field = BitField(14, 17)  # parameter one
+reg_src2_field = BitField(10, 13)  # parameter two
+offset_field = BitField(0, 9)  # nubmer
 
 # The following operation codes control both the ALU and some
 # other parts of the CPU.
