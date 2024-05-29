@@ -25,12 +25,22 @@ class LSystem:
             self.n -= 1
 
     def draw(self):
-        moves = {'F': turtle.forward(10), '+': turtle.left(self.angle), "-": turtle.right(self.angle)}
+        t = turtle.Turtle()
+        t.pu()
+        t.setposition(self.starting_pos)
+        t.pd()
+        t.setheading(self.starting_angle)
+        t.color(self.color)
+
+        moves = {'F': (t.forward, 10), '+': (t.left, self.angle), "-": (t.right, self.angle)}
 
         for move in self.commands:
-            moves[move]
+            if move in moves.keys():
+                moves[move][0](moves[move][1])
+            else:
+                continue
 
-        turtle.mainloop()
+        t.mainloop()
 
     def plot(self):
         pass
