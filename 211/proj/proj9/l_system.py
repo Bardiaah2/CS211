@@ -10,7 +10,7 @@ class LSystem:
     """
 
     def __init__(self, axiom, rules, angle, step, n=3,
-    starting_pos=(-200, -800), starting_angle=90, color="blue"):
+    starting_pos=(0, -200), starting_angle=90, color="blue"):
         self.axiom: str = axiom
         self.rules: dict = rules
         self.angle: int | float = angle
@@ -25,11 +25,10 @@ class LSystem:
 
         for _ in range(self.n - 1):
             self.commands = self.commands.translate({ord(c): y for (c, y) in self.rules.items()})
-        print(self.commands)
 
     def draw(self):
         t = turtle.Turtle()
-        # t.speed(0)
+        t.speed(0)
         t.pu()
         t.setposition(self.starting_pos)
         t.pd()
@@ -37,7 +36,6 @@ class LSystem:
         t.color(self.color)
 
         states = state.Stack()
-        last_state = state.State()
 
         moves = {'F': (t.forward, self.step), '+': (t.left, self.angle), "-": (t.right, self.angle)}
 
@@ -48,8 +46,7 @@ class LSystem:
                 t.pd()
 
             elif move == '[':
-                last_state.set_state(t)
-                states.push(last_state)
+                states.push(state.State(t.xcor(), t.ycor(), t.heading()))
 
             elif move == ']':
                 t.pu()
@@ -76,17 +73,15 @@ if __name__ == '__main__':
     )
     # ls1.plot()
 
-    ls2 = LSystem(axiom="X", 
+    ls2 = LSystem(axiom="X",
                      rules = {'X': "F[+X][-X]FX", "F": "FF"},
                      angle=25.7,
-                     step=5,
+                     step=2,
                      n=7)
-    
-    ls3 = LSystem(axiom="F", 
-                     rules = {"F": "F[+F]F[-F]F"},
-                     angle=25.7,
-                     step=10,
+
+    ls3 = LSystem(axiom="F",
+                     rules = {"F": "F[+F]F[-F][F]"},
+                     angle=20,
+                     step=5,
                      n=5)
-    ls3.plot()
-
-
+    ls2.plot()

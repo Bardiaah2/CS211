@@ -11,7 +11,7 @@ class LSystem:
     """
 
     def __init__(self, axiom, rules, angle, step, n=3,
-    starting_pos=(-200, 0), starting_angle=0, color="blue"):
+    starting_pos=(0, -200), starting_angle=90, color="blue"):
         self.axiom: str = axiom
         self.rules: dict = rules
         self.angle: int | float = angle
@@ -28,7 +28,7 @@ class LSystem:
         for _ in range(self.n):
             for key in self.rules.keys():
                 new_rules[key] = random.choices([i[1] for i in self.rules[key]], [i[0] for i in self.rules[key]])[0]
-                
+
             self.commands = self.commands.translate({ord(c): y for (c, y) in new_rules.items()})
 
     def draw(self):
@@ -41,7 +41,6 @@ class LSystem:
         t.color(self.color)
 
         states = state.Stack()
-        last_state = state.State()
 
         moves = {'F': (t.forward, self.step), '+': (t.left, self.angle), "-": (t.right, self.angle)}
 
@@ -53,8 +52,7 @@ class LSystem:
                 continue
 
             elif move == '[':
-                last_state.set_state(t)
-                states.push(last_state)
+                states.push(state.State(t.xcor(), t.ycor(), t.heading()))
                 continue
 
             elif move == ']':
@@ -88,10 +86,10 @@ if __name__ == '__main__':
 
     nd_ls_1 = LSystem(axiom="F",
     rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
-    angle=50, step=10, n = 5
+    angle=25.7, step=10, n = 5
     )
 
-    nd_ls_2 = LSystem(axiom="X", 
+    nd_ls_2 = LSystem(axiom="X",
                      rules = {'X': "F[+X][-X]FX", "F": "FF"},
                      angle=25.7,
                      step=10,
