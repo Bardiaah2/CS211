@@ -23,14 +23,12 @@ class LSystem:
 
     def iterate(self):
         new_rules = {}
-        for key in self.rules.keys():
-            new_rules[key] = random.choices([i[1] for i in self.rules[key]], [i[0] for i in self.rules[key]])[0]
+        self.commands = self.axiom
 
-        self.commands = self.axiom.translate({ord(c): y for (c, y) in new_rules.items()})
-
-        for _ in range(self.n - 1):
+        for _ in range(self.n):
             for key in self.rules.keys():
                 new_rules[key] = random.choices([i[1] for i in self.rules[key]], [i[0] for i in self.rules[key]])[0]
+                
             self.commands = self.commands.translate({ord(c): y for (c, y) in new_rules.items()})
 
     def draw(self):
@@ -62,11 +60,10 @@ class LSystem:
             elif move == ']':
                 t.pu()
                 new_state = states.pop()
-                t.setpos(new_state.x, new_state.y)
+                t.goto(new_state.x, new_state.y)
                 t.setheading(new_state.angle)
                 t.pd()
                 continue
-
 
             if move in moves.keys():
 
@@ -91,6 +88,12 @@ if __name__ == '__main__':
 
     nd_ls_1 = LSystem(axiom="F",
     rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
-    angle=25.7, step=10, n = 7
+    angle=50, step=10, n = 5
     )
+
+    nd_ls_2 = LSystem(axiom="X", 
+                     rules = {'X': "F[+X][-X]FX", "F": "FF"},
+                     angle=25.7,
+                     step=10,
+                     n=7)
     nd_ls_1.plot()

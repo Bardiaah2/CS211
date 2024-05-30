@@ -10,7 +10,7 @@ class LSystem:
     """
 
     def __init__(self, axiom, rules, angle, step, n=3,
-    starting_pos=(-200, 0), starting_angle=0, color="blue"):
+    starting_pos=(-200, -800), starting_angle=90, color="blue"):
         self.axiom: str = axiom
         self.rules: dict = rules
         self.angle: int | float = angle
@@ -25,10 +25,11 @@ class LSystem:
 
         for _ in range(self.n - 1):
             self.commands = self.commands.translate({ord(c): y for (c, y) in self.rules.items()})
+        print(self.commands)
 
     def draw(self):
         t = turtle.Turtle()
-        t.speed(0)
+        # t.speed(0)
         t.pu()
         t.setposition(self.starting_pos)
         t.pd()
@@ -45,14 +46,21 @@ class LSystem:
                 t.pu()
                 moves['F'][0](moves['F'][1])
                 t.pd()
-                continue
+
+            elif move == '[':
+                last_state.set_state(t)
+                states.push(last_state)
+
+            elif move == ']':
+                t.pu()
+                new_state = states.pop()
+                t.goto(new_state.x, new_state.y)
+                t.setheading(new_state.angle)
+                t.pd()
 
             if move in moves.keys():
 
                 moves[move][0](moves[move][1])
-
-            else:
-                continue
 
         turtle.exitonclick()
 
@@ -66,10 +74,19 @@ if __name__ == '__main__':
     rules={"L": "LF+RFR+FL-F-LFLFL-FRFR+", "R": "-LFLF+RFRFR+F+RF-LFL-FR"},
     angle=90, step=10, n=3
     )
-    ls1.plot()
+    # ls1.plot()
 
-    # nd_ls_1 = LSystem(axiom="F",
-    # rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
-    # angle=90, step=10, n = 3
-    # )
-    # nd_ls_1.plot()
+    ls2 = LSystem(axiom="X", 
+                     rules = {'X': "F[+X][-X]FX", "F": "FF"},
+                     angle=25.7,
+                     step=5,
+                     n=7)
+    
+    ls3 = LSystem(axiom="F", 
+                     rules = {"F": "F[+F]F[-F]F"},
+                     angle=25.7,
+                     step=10,
+                     n=5)
+    ls3.plot()
+
+
