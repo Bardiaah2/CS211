@@ -1,5 +1,6 @@
 from typing import *
 import turtle
+import state
 
 
 class LSystem:
@@ -20,31 +21,55 @@ class LSystem:
         self.color: str = color
 
     def iterate(self):
-        while self.n:
-            self.commands = self.axiom.translate(self.rules)
-            self.n -= 1
+        self.commands = self.axiom.translate({ord(c): y for (c, y) in self.rules.items()})
+
+        for _ in range(self.n - 1):
+            self.commands = self.commands.translate({ord(c): y for (c, y) in self.rules.items()})
 
     def draw(self):
         t = turtle.Turtle()
+        t.speed(0)
         t.pu()
         t.setposition(self.starting_pos)
         t.pd()
         t.setheading(self.starting_angle)
         t.color(self.color)
 
-        moves = {'F': (t.forward, 10), '+': (t.left, self.angle), "-": (t.right, self.angle)}
+        states = state.Stack()
+        last_state = state.State()
+
+        moves = {'F': (t.forward, self.step), '+': (t.left, self.angle), "-": (t.right, self.angle)}
 
         for move in self.commands:
+            if move == 'f':
+                t.pu()
+                moves['F'][0](moves['F'][1])
+                t.pd()
+                continue
+
             if move in moves.keys():
+
                 moves[move][0](moves[move][1])
+
             else:
                 continue
 
-        t.mainloop()
+        turtle.exitonclick()
 
     def plot(self):
-        pass
+        self.iterate()
+        self.draw()
 
 
+if __name__ == '__main__':
+    ls1 = LSystem(axiom="-L",
+    rules={"L": "LF+RFR+FL-F-LFLFL-FRFR+", "R": "-LFLF+RFRFR+F+RF-LFL-FR"},
+    angle=90, step=10, n=3
+    )
+    ls1.plot()
 
-    
+    # nd_ls_1 = LSystem(axiom="F",
+    # rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
+    # angle=90, step=10, n = 3
+    # )
+    # nd_ls_1.plot()
