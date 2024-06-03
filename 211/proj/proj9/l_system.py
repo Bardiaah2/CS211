@@ -21,9 +21,9 @@ class LSystem:
         self.color: str = color
 
     def iterate(self):
-        self.commands = self.axiom.translate({ord(c): y for (c, y) in self.rules.items()})
+        self.commands = self.axiom
 
-        for _ in range(self.n - 1):
+        for _ in range(self.n):
             self.commands = self.commands.translate({ord(c): y for (c, y) in self.rules.items()})
 
     def draw(self):

@@ -2,6 +2,7 @@ from typing import *
 import turtle
 import state
 import random
+random.seed(42)
 
 
 class LSystem:
@@ -27,9 +28,11 @@ class LSystem:
 
         for _ in range(self.n):
             for key in self.rules.keys():
-                new_rules[key] = random.choices([i[1] for i in self.rules[key]], [i[0] for i in self.rules[key]])[0]
+
+                new_rules[key] = random.choices([couple[1] for couple in self.rules[key]], [couple[0] for couple in self.rules[key]])[0]
 
             self.commands = self.commands.translate({ord(c): y for (c, y) in new_rules.items()})
+        print(self.commands == '[F[+F]F[-F]F[+F[+F]F[-F]F]F[+F]F[-F]F]')
 
     def draw(self):
         t = turtle.Turtle()
@@ -70,7 +73,7 @@ class LSystem:
             else:
                 continue
 
-        turtle.exitonclick()
+        # turtle.exitonclick()
 
     def plot(self):
         self.iterate()
@@ -78,20 +81,34 @@ class LSystem:
 
 
 if __name__ == '__main__':
-    # ls1 = LSystem(axiom="-L",
-    # rules={"L": "LF+RFR+FL-F-LFLFL-FRFR+", "R": "-LFLF+RFRFR+F+RF-LFL-FR"},
-    # angle=90, step=10, n=3
-    # )
-    # ls1.plot()
-
     nd_ls_1 = LSystem(axiom="F",
     rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
-    angle=25.7, step=10, n = 5
-    )
+    angle=25.7, step=10, n=3, starting_pos=(-200, -200))
 
-    nd_ls_2 = LSystem(axiom="X",
-                     rules = {'X': "F[+X][-X]FX", "F": "FF"},
-                     angle=25.7,
-                     step=10,
-                     n=7)
     nd_ls_1.plot()
+
+    nd_ls_2 = LSystem(axiom="F",
+    rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
+    angle=25.7, step=10, n=3, starting_pos=(-100, -200))
+
+    nd_ls_2.plot()
+
+    nd_ls_3 = LSystem(axiom="F",
+    rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
+    angle=25.7, step=10, n=3, starting_pos=(0, -200))
+
+    nd_ls_3.plot()
+
+    nd_ls_4 = LSystem(axiom="F",
+    rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
+    angle=25.7, step=10, n=3, starting_pos=(100, -200))
+
+    nd_ls_4.plot()
+
+    nd_ls_5 = LSystem(axiom="F",
+    rules = {"F": [(.33, "F[+F]F[-F]F"), (.33, "F[+F]F"), (.33, "F[-F]F")]},
+    angle=25.7, step=10, n=3, starting_pos=(200, -200))
+
+    nd_ls_5.plot()
+
+    turtle.exitonclick()
